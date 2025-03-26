@@ -1,92 +1,92 @@
-# Room Reservation System
+# Système de Réservation de Salles
 
-A Flask-based web application for managing room reservations. This system allows users to browse available rooms, request reservations, and view their reservation status. Administrators can manage rooms and approve or reject reservation requests.
+Une application web basée sur Flask pour la gestion des réservations de salles. Ce système permet aux utilisateurs de parcourir les salles disponibles, de demander des réservations et de consulter le statut de leurs réservations. Les administrateurs peuvent gérer les salles et approuver ou rejeter les demandes de réservation.
 
-## Features
+## Fonctionnalités
 
-- **User Authentication**: Register, login, and user profiles
-- **Room Management**: Browse, view, and reserve rooms
-- **Reservation System**: Request, track, and manage room reservations
-- **Admin Dashboard**: Manage rooms and handle reservation requests
-- **Responsive Design**: Works on desktop and mobile devices
+- **Authentification des Utilisateurs** : Inscription, connexion et profils utilisateurs
+- **Gestion des Salles** : Parcourir, afficher et réserver des salles
+- **Système de Réservation** : Demander, suivre et gérer les réservations de salles
+- **Tableau de Bord Administrateur** : Gérer les salles et traiter les demandes de réservation
+- **Design Réactif** : Fonctionne sur ordinateurs et appareils mobiles
 
-## Technologies Used
+## Technologies Utilisées
 
-- **Backend**: Flask, SQLAlchemy, Flask-Login, Flask-WTF
-- **Database**: SQLite
-- **Frontend**: Tailwind CSS, Daisy UI
-- **JavaScript**: Vanilla JS for interactive features
+- **Backend** : Flask, SQLAlchemy, Flask-Login, Flask-WTF
+- **Base de Données** : SQLite
+- **Frontend** : Tailwind CSS, Daisy UI
+- **JavaScript** : JavaScript Vanilla pour les fonctionnalités interactives
 
 ## Installation
 
-1. Clone the repository:
-   ```
+1. Cloner le dépôt :
+   ```bash
    git clone <repository-url>
    cd room-reservation-system
    ```
 
-2. Create and activate a virtual environment:
-   ```
+2. Créer et activer un environnement virtuel :
+   ```bash
    python -m venv venv
-   # On Windows
+   # Sur Windows
    venv\Scripts\activate
-   # On macOS/Linux
+   # Sur macOS/Linux
    source venv/bin/activate
    ```
 
-3. Install dependencies:
-   ```
+3. Installer les dépendances :
+   ```bash
    pip install -r requirements.txt
    ```
 
-4. Run the application:
-   ```
+4. Exécuter l’application :
+   ```bash
    python run.py
    ```
 
-5. Access the application at `http://localhost:5000`
+5. Accéder à l’application à l’adresse `http://localhost:5000`
 
-## Default Admin Account
+## Compte Administrateur par Défaut
 
-The system creates a default admin account on first run:
-- Email: admin@example.com
-- Password: admin123
+Lors du premier lancement, le système crée un compte administrateur par défaut :
+- **Email** : admin@example.com
+- **Mot de passe** : admin123
 
-*Note: Change these credentials in a production environment.*
+*Remarque : Modifiez ces identifiants en environnement de production.*
 
-## Project Structure
+## Structure du Projet
 
 ```
 room-reservation-system/
 ├── app/
-│   ├── models/          # Database models
-│   ├── routes/          # Route handlers
-│   ├── forms/           # Form definitions
-│   ├── templates/       # HTML templates
-│   ├── static/          # Static files (CSS, JS)
-│   └── __init__.py      # Application factory
-├── requirements.txt     # Project dependencies
-└── run.py              # Application entry point
+│   ├── models/          # Modèles de base de données
+│   ├── routes/          # Gestion des routes
+│   ├── forms/           # Définition des formulaires
+│   ├── templates/       # Modèles HTML
+│   ├── static/          # Fichiers statiques (CSS, JS)
+│   └── __init__.py      # Factory de l’application
+├── requirements.txt     # Dépendances du projet
+└── run.py              # Point d’entrée de l’application
 ```
 
-## Usage
+## Utilisation
 
-### Regular Users
+### Utilisateurs Réguliers
 
-1. Register for an account or log in
-2. Browse available rooms
-3. View room details
-4. Request a room reservation
-5. Check reservation status in your profile
+1. S’inscrire ou se connecter
+2. Parcourir les salles disponibles
+3. Consulter les détails des salles
+4. Demander une réservation de salle
+5. Vérifier le statut de la réservation dans le profil
 
-### Administrators
+### Administrateurs
 
-1. Log in with admin credentials
-2. Access the admin dashboard
-3. Manage rooms (add, edit, delete)
-4. Review and process reservation requests
-5. View all reservations in the system
+1. Se connecter avec les identifiants administrateur
+2. Accéder au tableau de bord administrateur
+3. Gérer les salles (ajout, modification, suppression)
+4. Examiner et traiter les demandes de réservation
+5. Consulter toutes les réservations du système
 
-## License
+## Licence
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.

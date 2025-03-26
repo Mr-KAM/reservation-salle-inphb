@@ -18,17 +18,24 @@ class Room(db.Model):
         self.location = location
         self.description = description
 
-    def is_available(self, start_time, end_time):
+    def is_available(self, start_time, end_time, exclude_reservation_id=None):
         """Check if the room is available during the specified time period"""
         from app.models.reservation import Reservation
 
-        # Find any approved reservations that overlap with the requested time period
-        overlapping_reservations = Reservation.query.filter(
+        # Base query for overlapping reservations
+        query = Reservation.query.filter(
             Reservation.room_id == self.id,
-            Reservation.status == 'approved',
+            Reservation.status == 'approuvé',
             Reservation.end_time > start_time,
             Reservation.start_time < end_time
-        ).all()
+        )
+
+        # Exclude a specific reservation if needed (for editing)
+        if exclude_reservation_id:
+            query = query.filter(Reservation.id != exclude_reservation_id)
+
+        # Get all overlapping reservations
+        overlapping_reservations = query.all()
 
         return len(overlapping_reservations) == 0
 

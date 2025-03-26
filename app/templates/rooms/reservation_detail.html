@@ -84,15 +84,25 @@
                                 </div>
                             {% endif %}
 
-                            {% if current_user.is_admin and reservation.status == 'en attente' %}
+                            {% if current_user.is_admin %}
                                 <div class="divider"></div>
                                 <h3 class="font-semibold">Actions Administrateur</h3>
+
+                                {% if reservation.status == 'en attente' %}
+                                    <div class="flex gap-2 mt-4">
+                                        <form action="{{ url_for('admin.approve_reservation', reservation_id=reservation.id) }}" method="POST" class="flex-1">
+                                            <button type="submit" class="btn btn-success w-full">Approuver</button>
+                                        </form>
+                                        <form action="{{ url_for('admin.reject_reservation', reservation_id=reservation.id) }}" method="POST" class="flex-1">
+                                            <button type="submit" class="btn btn-error w-full">Rejeter</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+
                                 <div class="flex gap-2 mt-4">
-                                    <form action="{{ url_for('admin.approve_reservation', reservation_id=reservation.id) }}" method="POST" class="flex-1">
-                                        <button type="submit" class="btn btn-success w-full">Approuver</button>
-                                    </form>
-                                    <form action="{{ url_for('admin.reject_reservation', reservation_id=reservation.id) }}" method="POST" class="flex-1">
-                                        <button type="submit" class="btn btn-error w-full">Rejeter</button>
+                                    <a href="{{ url_for('admin.edit_reservation', reservation_id=reservation.id) }}" class="btn btn-info flex-1">Modifier</a>
+                                    <form action="{{ url_for('admin.delete_reservation', reservation_id=reservation.id) }}" method="POST" class="flex-1" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?');">
+                                        <button type="submit" class="btn btn-error w-full">Supprimer</button>
                                     </form>
                                 </div>
                             {% endif %}

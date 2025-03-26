@@ -74,9 +74,9 @@
                                     <td>{{ reservation.start_time.strftime('%H:%M') }} - {{ reservation.end_time.strftime('%H:%M') }}</td>
                                     <td>{{ reservation.title }}</td>
                                     <td>
-                                        {% if reservation.status == 'approved' %}
+                                        {% if reservation.status == 'approuvé' %}
                                             <div class="badge badge-success">Approuvé</div>
-                                        {% elif reservation.status == 'rejected' %}
+                                        {% elif reservation.status == 'rejeté' %}
                                             <div class="badge badge-error">Rejeté</div>
                                         {% else %}
                                             <div class="badge badge-warning">En attente</div>

@@ -16,9 +16,11 @@
 
     {% block styles %}{% endblock %}
 </head>
-<body class="min-h-screen bg-base-200">
+<body class="min-h-screen bg-base-200" >
+    <!-- style="background-image: url('/static/images/background.jpg');" -->
+    <div class="absolute inset-0 bg-opacity-80"></div>
     <!-- Navbar -->
-    <div class="navbar bg-base-200 text-primary-content shadow" style="position: sticky; top: 0; z-index: 1000;">
+    <div class="navbar bg-base-200 shadow" style="position: sticky; top: 0; z-index: 1000;">
         <div class="navbar-start">
             <div class="dropdown">
                 <label tabindex="0" class="btn btn-ghost lg:hidden">

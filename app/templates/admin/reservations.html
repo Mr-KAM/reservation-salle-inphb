@@ -60,6 +60,10 @@
                                     </td>
                                     <td class="flex gap-2">
                                         <a href="{{ url_for('rooms.reservation_detail', reservation_id=reservation.id) }}" class="btn btn-xs btn-outline">Voir</a>
+                                        <a href="{{ url_for('admin.edit_reservation', reservation_id=reservation.id) }}" class="btn btn-xs btn-info">Modifier</a>
+                                        <form action="{{ url_for('admin.delete_reservation', reservation_id=reservation.id) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?');">
+                                            <button type="submit" class="btn btn-xs btn-error">Supprimer</button>
+                                        </form>
                                         {% if reservation.status == 'en attente' %}
                                             <form action="{{ url_for('admin.approve_reservation', reservation_id=reservation.id) }}" method="POST" class="inline">
                                                 <button type="submit" class="btn btn-xs btn-success">Approuver</button>

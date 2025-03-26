@@ -3,10 +3,11 @@ import csv
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from datetime import datetime, date, time
 from app import db
 from app.models.room import Room
 from app.models.reservation import Reservation
-from app.forms.room_forms import RoomForm
+from app.forms.room_forms import RoomForm, EditReservationForm
 
 # Configuration for file uploads
 UPLOAD_FOLDER = 'app/static/uploads'
@@ -222,3 +223,78 @@ def reject_reservation(reservation_id):
     db.session.commit()
     flash('La réservation a été rejeté !', 'danger')
     return redirect(url_for('admin.dashboard'))
+
+@admin.route('/admin/reservations/<int:reservation_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_reservation(reservation_id):
+    """Edit a reservation"""
+    reservation = Reservation.query.get_or_404(reservation_id)
+    form = EditReservationForm()
+
+    if form.validate_on_submit():
+        # Update reservation details
+        reservation.title = form.title.data
+        reservation.description = form.description.data
+
+        # Combine date and time fields
+        start_datetime = datetime.combine(form.date.data, form.start_time.data)
+        end_datetime = datetime.combine(form.date.data, form.end_time.data)
+
+        # Check if the new time slot is available (if dates/times changed)
+        if (start_datetime != reservation.start_time or end_datetime != reservation.end_time) and form.status.data == 'approuvé':
+            room = Room.query.get(reservation.room_id)
+            # Exclude the current reservation from the availability check
+            if not room.is_available(start_datetime, end_datetime, exclude_reservation_id=reservation.id):
+                flash('Impossible de modifier la réservation. La salle n\'est pas disponible pendant l\'horaire demandé.', 'danger')
+                return redirect(url_for('admin.edit_reservation', reservation_id=reservation.id))
+
+        # Update times
+        reservation.start_time = start_datetime
+        reservation.end_time = end_datetime
+
+        # Update status if changed
+        old_status = reservation.status
+        new_status = form.status.data
+
+        if old_status != new_status:
+            if new_status == 'approuvé':
+                reservation.approve(current_user.id)
+            elif new_status == 'rejeté':
+                reservation.reject(current_user.id)
+            else:
+                reservation.status = new_status
+                reservation.admin_id = None
+
+        db.session.commit()
+        flash('La réservation a été mise à jour avec succès !', 'success')
+        return redirect(url_for('admin.all_reservations'))
+
+    elif request.method == 'GET':
+        # Populate form with current reservation data
+        form.title.data = reservation.title
+        form.description.data = reservation.description
+        form.date.data = reservation.start_time.date()
+        form.start_time.data = reservation.start_time.time()
+        form.end_time.data = reservation.end_time.time()
+        form.status.data = reservation.status
+
+    return render_template('admin/edit_reservation.html', title='Modifier Réservation', form=form, reservation=reservation)
+
+@admin.route('/admin/reservations/<int:reservation_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_reservation(reservation_id):
+    """Delete a reservation"""
+    reservation = Reservation.query.get_or_404(reservation_id)
+
+    # Store information for flash message
+    room_name = reservation.room.name
+    user_name = reservation.requester.username
+
+    # Delete the reservation
+    db.session.delete(reservation)
+    db.session.commit()
+
+    flash(f'La réservation de {user_name} pour la salle {room_name} a été supprimée avec succès !', 'success')
+    return redirect(url_for('admin.all_reservations'))
