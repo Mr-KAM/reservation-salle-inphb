@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="hero min-h-[70vh] bg-base-200">
+    <div class="hero-content text-center">
+        <div class="max-w-md">
+            <h1 class="text-5xl font-bold">Système de Réservation de Salles</h1>
+            <p class="py-6">Bienvenue dans notre système de réservation de salles. Trouvez et réservez des salles pour vos réunions, événements ou sessions d'étude.</p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="{{ url_for('rooms.list_rooms') }}" class="btn btn-primary">Voir les Salles</a>
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline">S'inscrire</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Se connecter</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="py-12">
+    <div class="container mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-8">Comment ça fonctionne</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body items-center text-center">
+                    <h3 class="card-title">1. Parcourir les Salles</h3>
+                    <p>Explorez nos salles disponibles et trouvez l'espace parfait pour vos besoins.</p>
+                </div>
+            </div>
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body items-center text-center">
+                    <h3 class="card-title">2. Demander une Réservation</h3>
+                    <p>Soumettez une demande de réservation pour la salle et le créneau horaire souhaités.</p>
+                </div>
+            </div>
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body items-center text-center">
+                    <h3 class="card-title">3. Obtenez la Confirmation</h3>
+                    <p>Une fois approuvée par un administrateur, vous recevrez une confirmation pour votre réservation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Salle : {{ room.name }} - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">Modifier Salle : {{ room.name }}</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-2">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text">Nom de la Salle</span>
+                            </label>
+                            {{ form.name(class="input input-bordered w-full") }}
+                            {% if form.name.errors %}
+                                {% for error in form.name.errors %}
+                                    <span class="text-error text-sm mt-1">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text">Capacité</span>
+                            </label>
+                            {{ form.capacity(class="input input-bordered w-full") }}
+                            {% if form.capacity.errors %}
+                                {% for error in form.capacity.errors %}
+                                    <span class="text-error text-sm mt-1">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text">Emplacement</span>
+                            </label>
+                            {{ form.location(class="input input-bordered w-full") }}
+                            {% if form.location.errors %}
+                                {% for error in form.location.errors %}
+                                    <span class="text-error text-sm mt-1">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-control mb-6">
+                            <label class="label">
+                                <span class="label-text">Description</span>
+                            </label>
+                            {{ form.description(class="textarea textarea-bordered h-24") }}
+                            {% if form.description.errors %}
+                                {% for error in form.description.errors %}
+                                    <span class="text-error text-sm mt-1">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-control mt-6">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-span-1">
+                    <div class="card bg-base-200">
+                        <div class="card-body">
+                            <h2 class="card-title">Informations sur la Salle</h2>
+                            <div class="stats stats-vertical shadow">
+                                <div class="stat">
+                                    <div class="stat-title">Créée le</div>
+                                    <div class="stat-value text-sm">{{ room.created_at.strftime('%Y-%m-%d') }}</div>
+                                </div>
+
+                                <div class="stat">
+                                    <div class="stat-title">Réservations Totales</div>
+                                    <div class="stat-value">{{ room.reservations|length }}</div>
+                                </div>
+
+                                <div class="stat">
+                                    <div class="stat-title">Statut Actuel</div>
+                                    <div class="stat-value text-sm">
+                                        {% if room.is_available(now, now) %}
+                                            <span class="text-success">Disponible</span>
+                                        {% else %}
+                                            <span class="text-error">Occupée</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <div class="alert alert-warning">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span>La modification des détails de la salle n'affectera pas les réservations existantes.</span>
+                            </div>
+
+                            <div class="mt-4">
+                                <a href="{{ url_for('rooms.room_detail', room_id=room.id) }}" class="btn btn-outline btn-sm w-full mb-2">Voir les Détails de la Salle</a>
+                                <form action="{{ url_for('admin.delete_room', room_id=room.id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette salle ? Cette action est irréversible.');">
+                                    <button type="submit" class="btn btn-error btn-sm w-full" {% if room.reservations %}disabled{% endif %}>
+                                        Supprimer la Salle
+                                    </button>
+                                </form>
+                                {% if room.reservations %}
+                                    <div class="text-xs text-error mt-1">Impossible de supprimer une salle avec des réservations existantes</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour au Tableau de Bord
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

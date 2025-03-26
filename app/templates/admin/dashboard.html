@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord Admin - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Tableau de bord</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Colonne Gauche: Réservations en Attente -->
+        <div class="lg:col-span-2">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">Réservations en Attente</h2>
+
+                    {% if pending_reservations %}
+                        <div class="overflow-x-auto">
+                            <table class="table table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Salle</th>
+                                        <th>Utilisateur</th>
+                                        <th>Date & Heure</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for reservation in pending_reservations %}
+                                        <tr>
+                                            <td>{{ reservation.title }}</td>
+                                            <td>{{ reservation.room.name }}</td>
+                                            <td>{{ reservation.requester.username }}</td>
+                                            <td>
+                                                {{ reservation.start_time.strftime('%Y-%m-%d') }}<br>
+                                                {{ reservation.start_time.strftime('%H:%M') }} - {{ reservation.end_time.strftime('%H:%M') }}
+                                            </td>
+                                            <td class="flex gap-2">
+                                                <a href="{{ url_for('rooms.reservation_detail', reservation_id=reservation.id) }}" class="btn btn-sm btn-outline">Voir</a>
+                                                <form action="{{ url_for('admin.approve_reservation', reservation_id=reservation.id) }}" method="POST" class="inline">
+                                                    <button type="submit" class="btn btn-sm btn-success">✓</button>
+                                                </form>
+                                                <form action="{{ url_for('admin.reject_reservation', reservation_id=reservation.id) }}" method="POST" class="inline">
+                                                    <button type="submit" class="btn btn-sm btn-error">✕</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Aucune réservation en attente pour le moment.</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <a href="{{ url_for('admin.all_reservations') }}" class="btn btn-outline btn-sm">Voir Toutes les Réservations</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne Droite: Gestion des Salles -->
+        <div class="lg:col-span-1">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">Gestion des Salles</h2>
+
+                    <div class="mb-4 space-y-2">
+                        <a href="{{ url_for('admin.add_room') }}" class="btn btn-primary w-full">Ajouter une Nouvelle Salle</a>
+                        <a href="{{ url_for('admin.add_rooms_from_csv') }}" class="btn btn-secondary w-full">Importer des Salles (CSV)</a>
+                    </div>
+
+                    <h3 class="font-semibold text-lg mt-6 mb-2">Salles Existantes</h3>
+
+                    {% if rooms %}
+                        <div class="overflow-y-auto max-h-96">
+                            <table class="table table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Capacité</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for room in rooms %}
+                                        <tr>
+                                            <td>{{ room.name }}</td>
+                                            <td>{{ room.capacity }}</td>
+                                            <td class="flex gap-1">
+                                                <a href="{{ url_for('rooms.room_detail', room_id=room.id) }}" class="btn btn-xs btn-outline">Voir</a>
+                                                <a href="{{ url_for('admin.edit_room', room_id=room.id) }}" class="btn btn-xs btn-info">Modifier</a>
+                                                <form action="{{ url_for('admin.delete_room', room_id=room.id) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette salle ?');">
+                                                    <button type="submit" class="btn btn-xs btn-error">Supprimer</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Aucune salle disponible. Ajoutez une salle pour commencer.</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Carte des Statistiques Admin -->
+            <div class="card bg-base-100 shadow-xl mt-6">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">Statistiques du Système</h2>
+
+                    <div class="stats stats-vertical shadow">
+                        <div class="stat">
+                            <div class="stat-title">Total des Salles</div>
+                            <div class="stat-value">{{ rooms|length }}</div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="stat-title">Réservations en Attente</div>
+                            <div class="stat-value text-warning">{{ pending_reservations|length }}</div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="stat-title">Total des Réservations</div>
+                            {% set total_reservations = namespace(count=0) %}
+                            {% for room in rooms %}
+                                {% set total_reservations.count = total_reservations.count + room.reservations|length %}
+                            {% endfor %}
+                            <div class="stat-value">{{ total_reservations.count }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

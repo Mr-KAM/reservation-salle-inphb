@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Réservations - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">Mes Réservations</h1>
+
+            <div class="tabs tabs-boxed mb-6">
+                <a class="tab tab-active" id="tab-all">Tout</a>
+                <a class="tab" id="tab-pending">En Attente</a>
+                <a class="tab" id="tab-approved">Approuvé</a>
+                <a class="tab" id="tab-rejected">Rejeté</a>
+            </div>
+
+            {% if reservations %}
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Salle</th>
+                                <th>Date</th>
+                                <th>Heure</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in reservations %}
+                                <tr class="reservation-row" data-status="{{ reservation.status }}">
+                                    <td>{{ reservation.title }}</td>
+                                    <td>{{ reservation.room.name }}</td>
+                                    <td>{{ reservation.start_time.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ reservation.start_time.strftime('%H:%M') }} - {{ reservation.end_time.strftime('%H:%M') }}</td>
+                                    <td>
+                                        {% if reservation.status == 'approuvé' %}
+                                            <div class="badge badge-success">Approuvé</div>
+                                        {% elif reservation.status == 'rejeté' %}
+                                            <div class="badge badge-error">Rejeté</div>
+                                        {% else %}
+                                            <div class="badge badge-warning">En Attente</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('rooms.reservation_detail', reservation_id=reservation.id) }}" class="btn btn-sm btn-outline">Voir</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Vous n'avez pas encore de réservations.</span>
+                </div>
+            {% endif %}
+
+            <div class="mt-6">
+                <a href="{{ url_for('rooms.list_rooms') }}" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Réserver une Salle
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabAll = document.getElementById('tab-all');
+        const tabPending = document.getElementById('tab-pending');
+        const tabApproved = document.getElementById('tab-approved');
+        const tabRejected = document.getElementById('tab-rejected');
+        const reservationRows = document.querySelectorAll('.reservation-row');
+
+        function filterReservations(status) {
+            reservationRows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        tabAll.addEventListener('click', function() {
+            tabAll.classList.add('tab-active');
+            tabPending.classList.remove('tab-active');
+            tabApproved.classList.remove('tab-active');
+            tabRejected.classList.remove('tab-active');
+            filterReservations('all');
+        });
+
+        tabPending.addEventListener('click', function() {
+            tabAll.classList.remove('tab-active');
+            tabPending.classList.add('tab-active');
+            tabApproved.classList.remove('tab-active');
+            tabRejected.classList.remove('tab-active');
+            filterReservations('pending');
+        });
+
+        tabApproved.addEventListener('click', function() {
+            tabAll.classList.remove('tab-active');
+            tabPending.classList.remove('tab-active');
+            tabApproved.classList.add('tab-active');
+            tabRejected.classList.remove('tab-active');
+            filterReservations('approved');
+        });
+
+        tabRejected.addEventListener('click', function() {
+            tabAll.classList.remove('tab-active');
+            tabPending.classList.remove('tab-active');
+            tabApproved.classList.remove('tab-active');
+            tabRejected.classList.add('tab-active');
+            filterReservations('rejected');
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

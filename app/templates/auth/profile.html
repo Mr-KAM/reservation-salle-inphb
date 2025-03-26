@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Profil - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">Profil de l'utilisateur</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-1">
+                    <div class="flex flex-col items-center">
+                        <div class="avatar placeholder mb-4">
+                            <div class="bg-neutral-focus text-neutral-content rounded-full w-24">
+                                <span class="text-3xl">{{ current_user.username[0] | upper }}</span>
+                            </div>
+                        </div>
+                        <h2 class="text-xl font-semibold">{{ current_user.username }}</h2>
+                        <p class="text-sm opacity-70">{{ current_user.email }}</p>
+
+                        {% if current_user.is_admin %}
+                            <div class="badge badge-primary mt-2">Administrateur</div>
+                        {% else %}
+                            <div class="badge badge-secondary mt-2">Utilisateur</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-span-2">
+                    <div class="stats shadow w-full">
+                        <div class="stat">
+                            <div class="stat-title">Réservations totales</div>
+                            <div class="stat-value">{{ current_user.reservations | length }}</div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="stat-title">En attente</div>
+                            <div class="stat-value text-warning">
+                                {{ current_user.reservations | selectattr('status', 'equalto', 'pending') | list | length }}
+                            </div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="stat-title">Approuvées</div>
+                            <div class="stat-value text-success">
+                                {{ current_user.reservations | selectattr('status', 'equalto', 'approved') | list | length }}
+                            </div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="stat-title">Rejetées</div>
+                            <div class="stat-value text-error">
+                                {{ current_user.reservations | selectattr('status', 'equalto', 'rejected') | list | length }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold mb-4">Réservations récentes</h3>
+
+                        {% if current_user.reservations %}
+                            <div class="overflow-x-auto">
+                                <table class="table table-zebra w-full">
+                                    <thead>
+                                        <tr>
+                                            <th>Titre</th>
+                                            <th>Salle</th>
+                                            <th>Date</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for reservation in current_user.reservations[:5] %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ url_for('rooms.reservation_detail', reservation_id=reservation.id) }}" class="link link-hover">
+                                                        {{ reservation.title }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ reservation.room.name }}</td>
+                                                <td>{{ reservation.start_time.strftime('%Y-%m-%d') }}</td>
+                                                <td>
+                                                    {% if reservation.status == 'approved' %}
+                                                        <div class="badge badge-success">Approuvé</div>
+                                                    {% elif reservation.status == 'rejected' %}
+                                                        <div class="badge badge-error">Rejeté</div>
+                                                    {% else %}
+                                                        <div class="badge badge-warning">En attente</div>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {% if current_user.reservations | length > 5 %}
+                                <div class="text-center mt-4">
+                                    <a href="{{ url_for('rooms.my_reservations') }}" class="btn btn-outline btn-sm">Voir toutes les réservations</a>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert">
+                                <span>Vous n'avez pas encore de réservations.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

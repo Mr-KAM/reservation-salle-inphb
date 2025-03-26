@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl font-bold mb-6">Connexion</h2>
+
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Email</span>
+                    </label>
+                    {{ form.email(class="input input-bordered w-full", placeholder="Entrez votre email") }}
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <span class="text-error text-sm mt-1">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Mot de passe</span>
+                    </label>
+                    {{ form.password(class="input input-bordered w-full", placeholder="Entrez votre mot de passe") }}
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <span class="text-error text-sm mt-1">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-control mb-6">
+                    <label class="label cursor-pointer">
+                        <span class="label-text">Se souvenir de moi</span>
+                        {{ form.remember(class="checkbox") }}
+                    </label>
+                </div>
+
+                <div class="form-control mt-6">
+                    {{ form.submit(class="btn btn-primary w-full") }}
+                </div>
+            </form>
+
+            <div class="divider">OU</div>
+
+            <div class="text-center">
+                <p>Vous n'avez pas de compte ? <a href="{{ url_for('auth.register') }}" class="text-primary">Inscrivez-vous ici</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

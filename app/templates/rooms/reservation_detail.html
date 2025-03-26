@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Réservation : {{ reservation.title }} - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h1 class="text-3xl font-bold">{{ reservation.title }}</h1>
+                <div>
+                    {% if reservation.status == 'approuvé' %}
+                        <div class="badge badge-lg badge-success">Approuvé</div>
+                    {% elif reservation.status == 'rejeté' %}
+                        <div class="badge badge-lg badge-error">Rejeté</div>
+                    {% else %}
+                        <div class="badge badge-lg badge-warning">En Attente</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-2">
+                    <div class="prose max-w-none">
+                        <h2 class="text-xl font-semibold">Description</h2>
+                        <p>{{ reservation.description or 'Aucune description fournie.' }}</p>
+
+                        <h2 class="text-xl font-semibold mt-6">Informations sur la Salle</h2>
+                        <p><strong>Salle :</strong> {{ reservation.room.name }}</p>
+                        <p><strong>Lieu :</strong> {{ reservation.room.location }}</p>
+                        <p><strong>Capacité :</strong> {{ reservation.room.capacity }} personnes</p>
+
+                        <h2 class="text-xl font-semibold mt-6">Détails de la Réservation</h2>
+                        <p><strong>Date :</strong> {{ reservation.start_time.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Heure :</strong> {{ reservation.start_time.strftime('%H:%M') }} - {{ reservation.end_time.strftime('%H:%M') }}</p>
+                        <p><strong>Durée :</strong>
+                            {% set duration = (reservation.end_time - reservation.start_time).total_seconds() / 3600 %}
+                            {{ duration|round(1) }} heures
+                        </p>
+                        <p><strong>Demandé par :</strong> {{ reservation.requester.username }}</p>
+                        <p><strong>Demandé le :</strong> {{ reservation.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+
+                        {% if reservation.admin %}
+                            <p><strong>Traité par :</strong> {{ reservation.admin.username }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-span-1">
+                    <div class="card bg-base-200">
+                        <div class="card-body">
+                            <h2 class="card-title">Statut</h2>
+
+                            {% if reservation.status == 'approuvé' %}
+                                <div class="alert alert-success">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Votre réservation a été approuvée !</span>
+                                </div>
+
+                                {% if reservation.is_active() %}
+                                    <div class="alert alert-info mt-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 h-6 w-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span>Cette réservation est actuellement active.</span>
+                                    </div>
+                                {% endif %}
+
+                            {% elif reservation.status == 'rejeté' %}
+                                <div class="alert alert-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Votre réservation a été rejetée.</span>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <span>Votre réservation est en attente d'approbation.</span>
+                                </div>
+                            {% endif %}
+
+                            {% if current_user.is_admin and reservation.status == 'en attente' %}
+                                <div class="divider"></div>
+                                <h3 class="font-semibold">Actions Administrateur</h3>
+                                <div class="flex gap-2 mt-4">
+                                    <form action="{{ url_for('admin.approve_reservation', reservation_id=reservation.id) }}" method="POST" class="flex-1">
+                                        <button type="submit" class="btn btn-success w-full">Approuver</button>
+                                    </form>
+                                    <form action="{{ url_for('admin.reject_reservation', reservation_id=reservation.id) }}" method="POST" class="flex-1">
+                                        <button type="submit" class="btn btn-error w-full">Rejeter</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="{{ url_for('rooms.my_reservations') }}" class="btn btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour à Mes Réservations
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

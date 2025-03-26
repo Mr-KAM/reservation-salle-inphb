@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ room.name }} - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h1 class="text-3xl font-bold">{{ room.name }}</h1>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('rooms.reserve_room', room_id=room.id) }}" class="btn btn-primary mt-4 md:mt-0">Réserver cette salle</a>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-2">
+                    <div class="prose max-w-none">
+                        <h2 class="text-xl font-semibold">Description</h2>
+                        <p>{{ room.description or 'Aucune description disponible.' }}</p>
+
+                        <h2 class="text-xl font-semibold mt-6">Emplacement</h2>
+                        <p>{{ room.location }}</p>
+                    </div>
+                </div>
+
+                <div class="col-span-1">
+                    <div class="card bg-base-200">
+                        <div class="card-body">
+                            <h2 class="card-title">Détails de la salle</h2>
+                            <div class="stats stats-vertical shadow">
+                                <div class="stat">
+                                    <div class="stat-title">Capacité</div>
+                                    <div class="stat-value">{{ room.capacity }}</div>
+                                    <div class="stat-desc">Nombre maximum de personnes</div>
+                                </div>
+
+                                <div class="stat">
+                                    <div class="stat-title">Statut</div>
+                                    <div class="stat-value">
+                                        {% if room.is_currently_available() %}
+                                            <span class="text-success">Disponible</span>
+                                        {% else %}
+                                            <span class="text-error">Occupée</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="stat-desc">Disponibilité actuelle</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2 class="text-2xl font-semibold mb-4">Réservations à venir</h2>
+
+            {% if reservations %}
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Heure</th>
+                                <th>Titre</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in reservations %}
+                                <tr>
+                                    <td>{{ reservation.start_time.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ reservation.start_time.strftime('%H:%M') }} - {{ reservation.end_time.strftime('%H:%M') }}</td>
+                                    <td>{{ reservation.title }}</td>
+                                    <td>
+                                        {% if reservation.status == 'approved' %}
+                                            <div class="badge badge-success">Approuvé</div>
+                                        {% elif reservation.status == 'rejected' %}
+                                            <div class="badge badge-error">Rejeté</div>
+                                        {% else %}
+                                            <div class="badge badge-warning">En attente</div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Aucune réservation à venir pour cette salle.</span>
+                </div>
+            {% endif %}
+
+            <div class="mt-6">
+                <a href="{{ url_for('rooms.list_rooms') }}" class="btn btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour aux salles
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

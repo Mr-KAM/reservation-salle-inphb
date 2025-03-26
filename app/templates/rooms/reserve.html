@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Réserver {{ room.name }} - Système de Réservation de Salle{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">Réserver la Salle : {{ room.name }}</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-2">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text">Titre de la Réservation</span>
+                            </label>
+                            {{ form.title(class="input input-bordered w-full", placeholder="Entrez un titre pour votre réservation") }}
+                            {% if form.title.errors %}
+                                {% for error in form.title.errors %}
+                                    <span class="text-error text-sm mt-1">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text">Description</span>
+                            </label>
+                            {{ form.description(class="textarea textarea-bordered h-24", placeholder="Décrivez l'objectif de votre réservation") }}
+                            {% if form.description.errors %}
+                                {% for error in form.description.errors %}
+                                    <span class="text-error text-sm mt-1">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text">Date</span>
+                            </label>
+                            {{ form.date(class="input input-bordered w-full", type="date") }}
+                            {% if form.date.errors %}
+                                {% for error in form.date.errors %}
+                                    <span class="text-error text-sm mt-1">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text">Heure de Début</span>
+                                </label>
+                                {{ form.start_time(class="input input-bordered w-full", type="time") }}
+                                {% if form.start_time.errors %}
+                                    {% for error in form.start_time.errors %}
+                                        <span class="text-error text-sm mt-1">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text">Heure de Fin</span>
+                                </label>
+                                {{ form.end_time(class="input input-bordered w-full", type="time") }}
+                                {% if form.end_time.errors %}
+                                    {% for error in form.end_time.errors %}
+                                        <span class="text-error text-sm mt-1">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Votre demande de réservation devra être approuvée par un administrateur avant d'être confirmée.</span>
+                        </div>
+
+                        <div class="form-control mt-6">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-span-1">
+                    <div class="card bg-base-200">
+                        <div class="card-body">
+                            <h2 class="card-title">Détails de la Salle</h2>
+                            <p><strong>Lieu :</strong> {{ room.location }}</p>
+                            <p><strong>Capacité :</strong> {{ room.capacity }} personnes</p>
+                            {% if room.description %}
+                                <p><strong>Description :</strong> {{ room.description | truncate(100) }}</p>
+                            {% endif %}
+
+                            <div class="divider"></div>
+
+                            <h3 class="font-semibold">Règles de Réservation</h3>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>Les réservations doivent être faites au moins 24 heures à l'avance</li>
+                                <li>La durée maximale de la réservation est de 4 heures</li>
+                                <li>Merci d'annuler si vous n'avez plus besoin de la salle</li>
+                                <li>Laissez la salle propre et rangée après utilisation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="{{ url_for('rooms.room_detail', room_id=room.id) }}" class="btn btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour aux détails de la Salle
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

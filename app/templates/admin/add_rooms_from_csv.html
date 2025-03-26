@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Room Reservation System{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">{{ title }}</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-2">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        <div class="form-control mb-6">
+                            <label class="label" for="csv_file_input">
+                                <span class="label-text">Fichier CSV</span>
+                            </label>
+                            <input type="file" id="csv_file_input" name="csv_file" class="file-input file-input-bordered w-full" accept=".csv" required aria-describedby="csv_file_help" />
+                            <label class="label" id="csv_file_help">
+                                <span class="label-text-alt">Sélectionnez un fichier CSV contenant les informations des salles</span>
+                            </label>
+                        </div>
+
+                        <div class="form-control mt-6">
+                            <button type="submit" class="btn btn-primary">Importer les salles</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-span-1">
+                    <div class="card bg-base-200">
+                        <div class="card-body">
+                            <h2 class="card-title">Format du fichier CSV</h2>
+                            <p class="mb-4">Le fichier CSV doit contenir les colonnes suivantes :</p>
+                            <ul class="list-disc pl-5 space-y-2">
+                                <li><strong>name</strong> - Nom de la salle (obligatoire)</li>
+                                <li><strong>capacity</strong> - Capacité de la salle (obligatoire, nombre entier)</li>
+                                <li><strong>location</strong> - Emplacement de la salle (obligatoire)</li>
+                                <li><strong>description</strong> - Description de la salle (optionnel)</li>
+                            </ul>
+
+                            <div class="divider"></div>
+
+                            <h3 class="font-semibold">Exemple de contenu CSV :</h3>
+                            <pre class="bg-base-300 p-2 rounded-lg text-xs mt-2 overflow-x-auto">
+name,capacity,location,description
+Salle A101,30,Bâtiment A - 1er étage,Salle de cours standard
+Salle B205,15,Bâtiment B - 2ème étage,Salle de réunion
+Amphithéâtre C,120,Bâtiment C - RDC,Grand amphithéâtre
+                            </pre>
+
+                            <div class="alert alert-info mt-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>Assurez-vous que votre fichier CSV est encodé en UTF-8 pour éviter les problèmes d'accents.</span>
+                            </div>
+
+                            <div class="mt-4">
+                                <a href="{{ url_for('static', filename='uploads/sample_rooms.csv') }}" download class="btn btn-outline btn-sm w-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Télécharger un exemple de CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour au tableau de bord
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

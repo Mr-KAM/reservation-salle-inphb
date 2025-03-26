@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Salles - Système de Réservation de Salles{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Salles Disponibles</h1>
+        <div class="flex gap-2">
+            <div class="form-control">
+                <div class="input-group">
+                    <input type="text" placeholder="Rechercher des salles..." class="input input-bordered" id="roomSearch" />
+                    <button class="btn btn-square" title="Rechercher des salles">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if rooms %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for room in rooms %}
+                <div class="card bg-base-100 shadow-xl room-card">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            {{ room.name }}
+                            {% if room.is_currently_available() %}
+                                <div class="badge badge-success">Disponible</div>
+                            {% else %}
+                                <div class="badge badge-error">Occupée</div>
+                            {% endif %}
+                        </h2>
+                        <div class="badge badge-outline">Capacité : {{ room.capacity }}</div>
+                        <p class="text-sm opacity-70 mt-2">{{ room.location }}</p>
+                        <p class="mt-2">{{ room.description | truncate(100) }}</p>
+                        <div class="card-actions justify-end mt-4">
+                            <a href="{{ url_for('rooms.room_detail', room_id=room.id) }}" class="btn btn-primary">Voir les détails</a>
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('rooms.reserve_room', room_id=room.id) }}" class="btn btn-outline">Réserver</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Aucune salle disponible pour le moment. Veuillez revenir plus tard.</span>
+        </div>
+    {% endif %}
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('roomSearch');
+        const roomCards = document.querySelectorAll('.room-card');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            roomCards.forEach(card => {
+                const roomName = card.querySelector('.card-title').textContent.toLowerCase();
+                const roomLocation = card.querySelector('.opacity-70').textContent.toLowerCase();
+                const roomDescription = card.querySelector('p:not(.opacity-70)').textContent.toLowerCase();
+
+                if (roomName.includes(searchTerm) || roomLocation.includes(searchTerm) || roomDescription.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

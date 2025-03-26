@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}À propos - Système de Réservation de Salle{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-4xl font-bold mb-6">À propos du Système de Réservation de salles</h1>
+
+            <div class="prose max-w-none">
+                <p class="text-lg">
+                    Notre Système de Réservation de salles est conçu pour simplifier le processus de réservation et de gestion des salles pour divers usages.
+                    Que vous ayez besoin d'un espace pour des réunions, des événements ou des sessions d'étude à l'INP-HB, cette plateforme facilite la recherche et la réservation de la salle idéale.
+                </p>
+
+                <h2 class="text-2xl font-semibold mt-8">Fonctionnalités</h2>
+                <ul class="list-disc pl-6 mt-4">
+                    <li>Parcourir les salles disponibles avec des informations détaillées</li>
+                    <li>Demander des réservations de salles pour des dates et heures spécifiques</li>
+                    <li>Voir l'état de vos demandes de réservation</li>
+                    <li>Système d'approbation administrateur pour gérer la disponibilité des salles</li>
+                    <li>Interface conviviale</li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold mt-8">Comment Utiliser</h2>
+                <ol class="list-decimal pl-6 mt-4">
+                    <li>Créez un compte ou connectez-vous à votre compte existant</li>
+                    <li>Parcourez les salles disponibles</li>
+                    <li>Sélectionnez une salle et demandez une réservation pour votre créneau horaire souhaité</li>
+                    <li>Attendez qu'un administrateur approuve votre demande</li>
+                    <li>Une fois approuvée, vous recevrez une confirmation et la salle sera réservée pour vous</li>
+                </ol>
+
+                <h2 class="text-2xl font-semibold mt-8">Contact</h2>
+                <p class="mt-4">
+                    Si vous avez des questions ou besoin d'assistance, contactez notre équipe d'assistance à l'adresse suivante :
+                    <a href="mailto:anicet.kambou@inphb.ci" class="text-primary">support@roomreservation.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
